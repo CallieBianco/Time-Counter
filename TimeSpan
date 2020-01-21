@@ -1,0 +1,144 @@
+class TimeSpan:
+    def __init__(self, seconds = 0, minutes = 0, hours = 0):
+        self.__seconds = seconds
+        self.__minutes = minutes
+        self.__hours = hours
+        self.simplify()
+
+    # simplifies times so minutes and seconds over 60 or under -60 get converted
+    def simplify1(self):
+        while self.__seconds >= 60:
+            self.__seconds -= 60
+            self.__minutes += 1
+        while self.__seconds <= -60:
+            self.__seconds += 60
+            self.__minutes -= 1
+        while self.__minutes >= 60:
+            self.__minutes -= 60
+            self.__hours += 1
+        while self.__minutes <= -60:
+            self.__minutes += 60
+            self.__hours -= 1
+
+    # converts floats to smaller time intervals
+    def simplify(self):
+        self.simplify1()
+
+        # converts hours to minutes and minutes to seconds
+        tempHours = self.__hours * 60
+        tempMinutes = self.__minutes * 60
+
+        # will represent negative time properly
+        if tempMinutes > 0:
+            tempMinutes = tempMinutes + self.__seconds
+            self.__seconds = int(tempMinutes % 60)
+
+        self.__minutes = int(tempMinutes / 60)
+        tempHours = tempHours + self.__minutes  
+        if tempHours > 0:
+            self.__minutes = int(tempHours % 60)
+        else:
+            self.__minutes = int((tempHours % -60))
+        self.__hours = int(tempHours / 60)
+  
+        self.simplify1()
+
+    def getHours(self):
+        return int(self.__hours)
+
+    def getMinutes(self):
+        return int(self.__minutes)
+
+    def getSeconds(self):
+        return int(self.__seconds)
+
+    def setTime(self, seconds, minutes, hours):
+        self.__seconds = seconds
+        self.__minutes = minutes 
+        self.__hours = hours 
+        self.simplify()
+
+    def __str__(self):
+        string = "Hours: " + str(self.__hours) + ", Minutes: " + str(self.__minutes) + ", Seconds: " + str(self.__seconds)        
+        return string
+
+    def __add__(self, time):
+        tempTimeSpan = TimeSpan()
+        tempHours = float(self.__hours) + float(time.getHours())
+        tempMinutes = float(self.__minutes) + float(time.getMinutes())
+        tempSeconds = float(self.__seconds) + float(time.getSeconds())
+        tempTimeSpan.setTime(tempSeconds, tempMinutes, tempHours)
+        return tempTimeSpan 
+
+    def __sub__(self, time):
+        tempTimeSpan = TimeSpan()
+        tempHours = float(self.__hours) - float(time.getHours())
+        tempMinutes = float(self.__minutes) - float(time.getMinutes())
+        tempSeconds = float(self.__seconds) - float(time.getSeconds())
+        tempTimeSpan.setTime(tempSeconds, tempMinutes, tempHours)
+        return tempTimeSpan 
+
+    def __eq__(self, time):
+        equal = False
+        if self.__hours == time.getHours():
+            if self.__minutes == time.getMinutes():
+                if self.__seconds == time.getSeconds():
+                    equal = True
+        return equal
+
+    def __ne__(self, time):
+        equal = True
+        if self.__hours == time.getHours():
+            if self.__minutes == time.getMinutes():
+                if self.__seconds == time.getSeconds():
+                    equal = False
+        return equal
+
+    def __ge__(self, time):
+        equal = False
+        if self.__hours == time.getHours() or self.__hours > time.getHours():
+            if self.__minutes == time.getMinutes() or self.__minutes > time.getMinutes():
+                if self.__seconds == time.getSeconds() or self.__seconds > time.getSeconds():
+                    equal = True
+        return equal
+
+    def __gt__(self, time):
+        equal = False
+        if self.__hours > time.getHours():
+            equal = True
+        elif self.__hours == time.getHours():
+            if self.__minutes > time.getMinutes():
+                equal = True
+            elif self.__minutes == time.getMinutes():
+                if self.__seconds > time.getSeconds():
+                    equal = True
+        return equal
+
+    def __le__(self, time):
+        equal = False
+        if self.__hours == time.getHours() or self.__hours < time.getHours():
+            if self.__minutes == time.getMinutes() or self.__minutes < time.getMinutes():
+                if self.__seconds == time.getSeconds() or self.__seconds < time.getSeconds():
+                    equal = True
+        return equal
+
+    def __lt__(self, time):
+        equal = False
+        if self.__hours < time.getHours():
+            equal = True
+        elif self.__hours == time.getHours():
+            if self.__minutes < time.getMinutes():
+                equal = True
+            elif self.__minutes == time.getMinutes():
+                if self.__seconds < time.getSeconds():
+                    equal = True
+        return equal
+
+    def __neg__(self):
+        invTimeSpan = TimeSpan()
+        invHours = 0 - self.__hours
+        invMinutes = 0 - self.__minutes
+        invSeconds = 0 - self.__seconds
+        invTimeSpan.setTime(invSeconds, invMinutes, invHours)
+        return invTimeSpan
+
